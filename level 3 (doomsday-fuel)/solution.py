@@ -4,6 +4,10 @@ from fractions import gcd
 
 def solution(m):
 
+    if m == [[0]]:
+
+        return [1,1]
+
     terminals = []
 
     for i in xrange(len(m)): # for each row of the matrix
@@ -13,6 +17,56 @@ def solution(m):
         if state == 't': # if the row is a terminal state, add it to the list of terminals
 
             terminals.append(i)
+
+    # Take the transition matrix to it's canonical form (terminal states at the end of the matrix)
+
+    hashmap = {} # hashmap to map the re-organized-index to real-index 
+
+    iorder = [] # list of the re-organized-indexes in the order they are found in the matrix
+
+    mtemp = [] # temporal m matrix
+
+    ternN = 0 # number of terminals
+
+    for i in xrange(len(m)): # for each row of the matrix:
+
+        if i == 0:
+
+            mtemp.append(m[i]) # The initial state can't be terminal 
+
+            hashmap[0] = 0
+
+            iorder.append(0)
+
+        else: 
+
+            if i not in terminals: # if the row isnt a terminal state, add it to M
+
+                mtemp.append(m[i]) # add the row to the temporal matrix
+
+                iorder.append(i)
+
+                hashmap[i - ternN] = i 
+
+            else: 
+
+                ternN += 1
+
+    for i in terminals: # for each terminal state, add it to M
+
+        iorder.append(i) # add the index to the list of indexes
+
+        hashmap[len(mtemp)] = i
+
+        mtemp.append(m[i])
+
+    m = mtemp
+
+    mT = list(zip(*m)) # Transpose matrix
+
+    mTtemp = [mT[i] for i in iorder] # re-order the rows of the transposed matrix
+
+    m = list(zip(*mTtemp)) # untranspose matrix
 
     '''
     Here I used the book Adventures in Stochastic Processes (1992),
@@ -92,21 +146,34 @@ def identity(dim): # returns the identity matrix of dimension dim^2. eg: identit
     return [[frac(1) if i==j else frac(0) for i in xrange(dim)] for j in xrange(dim)]
 
 
+def matrixSum(A,B): # returns the sum of two matrices of the same dimension
+    return [[frac(A[i][j] + B[i][j]) for j in xrange(len(A[0]))] for i in xrange(len(A))]
+
+
 def matrixDif(A,B): # returns the difference of two matrices of the same dimension A + (-1)B
     return [[frac(A[i][j] - B[i][j]) for j in xrange(len(A[0]))] for i in xrange(len(A))]
 
 
-def invertMatrix(M, I): #Modified from https://github.com/ThomIves/MatrixInverse
+def invertMatrix(M, I): #Modified from https://github.com/ThomIves/MatrixInverse. Row operations to go from M | I to I | M^-1
+
     for fd in xrange(len(M)):
+
         fdScaler = frac(1,M[fd][fd])
+
         for j in xrange(len(M)):
+
             M[fd][j] = frac(M[fd][j] * fdScaler)
             I[fd][j] = frac(I[fd][j] * fdScaler)
+
         for i in list(xrange(len(M)))[0:fd] + list(xrange(len(M)))[fd+1:]:
+
             crScaler = M[i][fd]
+
             for j in xrange(len(M)):
+
                 M[i][j] = frac(M[i][j] - frac(crScaler * M[fd][j]))
                 I[i][j] = frac(I[i][j] - frac(crScaler * I[fd][j]))
+
     return I
 
 
