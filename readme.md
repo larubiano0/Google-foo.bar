@@ -1,1 +1,1 @@
-My Python work for Google FOO.BAR (2022)
+My Python2 solutions for Google FOO.BAR (2022)
