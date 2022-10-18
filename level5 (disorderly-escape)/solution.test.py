@@ -3,12 +3,8 @@ import solution
 def main():
     try: 
 
-        assert solution.solution('77') == '4208'
-        assert solution.solution('5') == '19'
-        assert solution.solution('56836') == '2284200653'
-        assert solution.solution('162863') == '18755586268'
-        assert solution.solution('171368') == '20765634270'
-
+        assert solution.solution(2, 3, 4) == '430'
+        assert solution.solution(2, 2, 2) == '7'
         print("All tests passed")
 
     except AssertionError:
